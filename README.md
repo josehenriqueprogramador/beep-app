@@ -1,43 +1,60 @@
-# 🚀 Beep Saúde - Pipeline de Dimensionamento Logístico
-Este projeto implementa o **Core Lógico** de uma operação logística para serviços de saúde domiciliar. O sistema processa pedidos de vacinação, valida a viabilidade geográfica na região metropolitana do Rio de Janeiro e calcula o dimensionamento ideal da frota de motoristas/técnicos.
-## 🧠 O Motor do Projeto
-O sistema foi construído sobre três pilares fundamentais de engenharia de dados:
- 1. **Motor de Cálculo:** Algoritmo de inteligência para predição de necessidade de pessoal baseado em janelas horárias.
- 2. **Validação Geoespacial:** Filtro de precisão matemática utilizando polígonos (biblioteca Shapely) para garantir que 100% dos pedidos estejam dentro da área de cobertura operacional.
- 3. **Interface de API:** Exposição dos resultados através de endpoints FastAPI, permitindo integração com outras ferramentas de BI.
-## 🛠️ Tecnologias Utilizadas
- * **Python 3.10+**
- * **Pandas & Numpy:** Manipulação e análise de dados volumosos.
- * **Shapely:** Geoprocessamento e álgebra geoespacial.
- * **FastAPI & Uvicorn:** Infraestrutura de microserviços.
-## 📈 Evolução: Do Protótipo à Produção (Roadmap)
-Este repositório contém o **MVP (Minimum Viable Product)** funcional. Abaixo, descrevo a transição da simulação para o sistema real da Beep Saúde:
-### 1. Camada de Dados
- * **Hoje:** Geração de dados sintéticos via Faker.
- * **Produção:** Integração direta via **SQL/PostgreSQL** com o banco de dados de agendamentos reais da Beep.
-### 2. Dinâmica Geográfica
- * **Hoje:** Polígono estático de atendimento do Rio de Janeiro.
- * **Produção:** Integração com **Google Maps API** para ajuste de polígono em tempo real (considerando interdições, clima e zonas de risco).
-### 3. Inteligência de Tráfego
- * **Hoje:** Capacidade fixa de 2 atendimentos/hora por motorista.
- * **Produção:** Algoritmo adaptativo que ajusta a produtividade baseada no **histórico de trânsito** e tempo médio de aplicação de cada tipo de vacina.
-### 4. Observabilidade e Segurança
- * **Hoje:** Execução aberta em ambiente de teste.
- * **Produção:** Implementação de **OAuth2/API Keys** para segurança e **Sentry/Loguru** para monitoramento de erros em tempo real.
-## 🏁 Como Rodar o Projeto
- 1. Instale as dependências:
-   ```bash
-   pip install -r requirements.txt
-   
-   ```
- 2. Inicie o servidor:
-   ```bash
-   uvicorn app:app --reload
-   
-   ```
- 3. Acesse http://localhost:8000/processar para rodar o pipeline.
-> **Visão Executiva:** > "Este projeto representa o **Motor Lógico (Core)** da operação. Ele já valida a viabilidade geográfica e calcula o dimensionamento de frota. Para escala industrial, a arquitetura foi desenhada para facilitar a substituição de entradas simuladas por conectores de dados em tempo real (ETL)."
-http://localhost:8000/download-relatorio
-estará o relatório logo após o processamento.
 
+# 🚀 Beep Saúde - Logística Inteligente & Dimensionamento de Frota
 
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-05998b.svg)
+![Status](https://img.shields.io/badge/Status-MVP_Funcional-green.svg)
+
+Este projeto implementa o **Core Lógico** de uma operação logística de saúde domiciliar. O sistema resolve um dos maiores desafios do setor: **Como garantir que temos a quantidade certa de profissionais, no lugar certo e na hora certa?**
+
+## 🧠 Arquitetura do Motor Lógico
+O sistema processa milhares de pontos de dados para entregar inteligência operacional através de três pilares:
+
+1.  **Validação Geoespacial:** Filtro de precisão matemática via polígonos (`Shapely`). Garante que 100% dos pedidos processados estejam dentro da malha viável de atendimento da Região Metropolitana do Rio de Janeiro.
+2.  **Motor de Dimensionamento:** Algoritmo que traduz demanda bruta em necessidade de capital humano, aplicando regras de negócio de produtividade por janela horária.
+3.  **Interface de Microserviço:** Exposição via `FastAPI`, pronta para ser consumida por Dashboards de BI ou sistemas de despacho.
+
+---
+
+## 🛠️ Stack Tecnológica
+* **Core:** Python 3.10+
+* **Análise de Dados:** `Pandas` & `Numpy` (Processamento vetorial).
+* **Geoprocessamento:** `Shapely` (Álgebra de pontos em polígonos).
+* **Servidor:** `FastAPI` & `Uvicorn`.
+
+---
+
+## 📈 Roadmap: Do Protótipo à Produção
+Este repositório é um **MVP (Minimum Viable Product)**. Abaixo, a visão de evolução para escala industrial:
+
+| Funcionalidade | Estado Atual (MVP) | Visão de Produção |
+| :--- | :--- | :--- |
+| **Fonte de Dados** | Dados sintéticos (`Faker`) | Conexão direta via **SQL/PostgreSQL** |
+| **Geolocalização** | Polígono estático | **Google Maps API** (Dinâmico com trânsito/risco) |
+| **Produtividade** | Fixa (2 atend./hora) | **Machine Learning** (Predição baseada em clima/trânsito) |
+| **Segurança** | Aberta para testes | Autenticação **OAuth2 / API Keys** |
+
+---
+
+## 🏁 Como Rodar e Testar
+
+### 1. Instalação
+```bash
+pip install -r requirements.txt
+
+```
+### 2. Execução
+```bash
+uvicorn app:app --reload
+
+```
+### 3. Fluxo de Operação (Importante ⚠️)
+Devido ao uso de **armazenamento efêmero** no ambiente de nuvem (Render Free), o ciclo de uso deve seguir esta ordem:
+ * **PASSO 1 (Processar):** Acesse http://localhost:8000/processar
+   * *O que ocorre:* O motor gera os dados, valida a geografia e salva o resultado no servidor.
+ * **PASSO 2 (Download):** Acesse http://localhost:8000/download-relatorio
+   * *O que ocorre:* Você recebe o arquivo dimensionamento.csv com a escala de motoristas pronta.
+> **Nota Técnica:** No Render Free, o servidor "dorme" após 15 minutos. Se o download falhar, basta rodar o Passo 1 novamente para reaquecer o motor.
+> 
+## 🎯 Visão Executiva
+> "Este projeto representa o **Cérebro Operacional** da logística. Ele não apenas processa dados, ele valida a viabilidade de negócio. A arquitetura foi desenhada para ser 'plug-and-play', onde a substituição da camada de simulação por dados reais de um banco de dados (ETL) é feita sem alterar a lógica central de cálculo."
