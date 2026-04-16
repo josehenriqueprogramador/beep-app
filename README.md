@@ -37,4 +37,7 @@ Este repositório contém o **MVP (Minimum Viable Product)** funcional. Abaixo, 
    ```
  3. Acesse http://localhost:8000/processar para rodar o pipeline.
 > **Visão Executiva:** > "Este projeto representa o **Motor Lógico (Core)** da operação. Ele já valida a viabilidade geográfica e calcula o dimensionamento de frota. Para escala industrial, a arquitetura foi desenhada para facilitar a substituição de entradas simuladas por conectores de dados em tempo real (ETL)."
+http://localhost:8000/download-relatorio
+estará o relatório logo após o processamento.
+
 
