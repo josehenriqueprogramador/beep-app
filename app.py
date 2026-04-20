@@ -1,30 +1,68 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
 import pandas as pd
 import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse
 from shapely.geometry import Point, Polygon
 import random
 import os
 
-app = FastAPI(title="Beep Operacional API")
+app = FastAPI(title="Beep Logística Inteligente")
 
-# --- CONFIGURAÇÕES TÉCNICAS (Mantidas) ---
+# --- CONFIGURAÇÃO GEOGRÁFICA (RIO DE JANEIRO) ---
 COORDS_RJ = [(-43.795, -23.025), (-43.365, -23.010), (-43.160, -22.990),
              (-43.120, -22.850), (-43.300, -22.750), (-43.650, -22.850), (-43.795, -23.025)]
 POLIGONO = Polygon(COORDS_RJ)
 
-def rodar_pipeline():
-    # ... (Sua lógica de processamento que já fizemos) ...
-    # Simulação rápida para o exemplo
-    dados = [{'horario_inicio': f"{random.randint(6,17)}:00", 'lat':-22.8, 'lon':-43.3} for _ in range(1000)]
+def rodar_pipeline_complexo(n=1000):
+    dados = []
+    tipos_servico = ['Vacina', 'Coleta']
+    perfis = ['Adulto', 'Criança']
+    
+    for i in range(n):
+        # Sorteio de variáveis de complexidade
+        servico = random.choice(tipos_servico)
+        perfil = random.choice(perfis)
+        itens = random.randint(1, 3)
+        
+        # Lógica de Tempo (Regra de Negócio)
+        tempo_base = 25 if servico == 'Coleta' else 15
+        adicional_itens = (itens - 1) * 10
+        adicional_perfil = 15 if perfil == 'Criança' else 0
+        
+        tempo_atendimento = tempo_base + adicional_itens + adicional_perfil
+        deslocamento_estimado = 15  # minutos entre casas
+        
+        dados.append({
+            'id_pedido': f'BEEP-{2000 + i}',
+            'servico': servico,
+            'perfil': perfil,
+            'itens': itens,
+            'tempo_total': tempo_atendimento + deslocamento_estimado,
+            'hora': random.randint(6, 17),
+            'lat': round(random.uniform(-23.05, -22.75), 6),
+            'lon': round(random.uniform(-43.60, -43.10), 6)
+        })
+    
     df = pd.DataFrame(dados)
-    df['valido'] = True
-    pico = df['horario_inicio'].str.split(':').str[0].value_counts().sort_index()
-    relatorio = pd.DataFrame({'pedidos': pico, 'motoristas': (pico/2).apply(np.ceil).astype(int)})
-    relatorio.to_csv("dimensionamento.csv")
-    return len(df)
+    
+    # Validação Geográfica
+    df['valido'] = df.apply(lambda r: POLIGONO.contains(Point(r['lon'], r['lat'])), axis=1)
+    df_validado = df[df['valido']].copy()
+    
+    # Dimensionamento Inteligente por Carga Horária
+    # Soma de todos os minutos necessários / 60 minutos (1 hora de trabalho)
+    resumo = df_validado.groupby('hora')['tempo_total'].sum() / 60
+    relatorio = pd.DataFrame({
+        'Hora': [f"{int(h):02d}:00" for h in resumo.index],
+        'Pedidos': df_validado['hora'].value_counts().sort_index().values,
+        'Motoristas_Necessarios': resumo.apply(np.ceil).astype(int).values
+    })
+    
+    relatorio.to_csv("dimensionamento.csv", index=False)
+    df_validado.to_csv("pedidos_detalhados.csv", index=False)
+    return len(df_validado)
 
-# --- NOVA ROTA PRINCIPAL COM INTERFACE ---
+# --- ROTAS DA API ---
 
 @app.get("/", response_class=HTMLResponse)
 def home():
@@ -34,44 +72,43 @@ def home():
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Beep Logística Inteligente</title>
+        <title>Beep Logística | Dimensionamento</title>
         <style>
-            body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; }
-            .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; margin-top: 50px; max-width: 500px; }
-            h1 { color: #00a896; margin-bottom: 10px; }
-            p { color: #666; margin-bottom: 30px; }
-            .btn { display: inline-block; padding: 15px 30px; margin: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; cursor: pointer; border: none; }
-            .btn-process { background-color: #00a896; color: white; }
-            .btn-process:hover { background-color: #008f7f; }
-            .btn-download { background-color: #2c3e50; color: white; }
-            .btn-download:hover { background-color: #1a252f; }
-            footer { margin-top: auto; padding: 20px; color: #888; font-size: 0.9em; }
-            a { color: #00a896; text-decoration: none; }
+            body { font-family: 'Segoe UI', sans-serif; background: #f0f4f3; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; }
+            .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); text-align: center; margin-top: 60px; max-width: 450px; border-top: 8px solid #00a896; }
+            h1 { color: #00a896; margin-bottom: 5px; }
+            p { color: #555; font-size: 0.9em; margin-bottom: 25px; }
+            .btn { display: block; padding: 12px 25px; margin: 10px auto; border-radius: 6px; text-decoration: none; font-weight: 600; transition: 0.2s; border: none; width: 80%; }
+            .btn-run { background: #00a896; color: white; }
+            .btn-run:hover { background: #008f7f; transform: scale(1.02); }
+            .btn-down { background: #2c3e50; color: white; }
+            .btn-down:hover { background: #1a252f; transform: scale(1.02); }
+            .footer { margin-top: auto; padding: 20px; font-size: 0.85em; color: #777; }
+            a { color: #00a896; text-decoration: none; font-weight: bold; }
         </style>
     </head>
     <body>
-        <div class="container">
+        <div class="card">
             <h1>Beep Saúde</h1>
-            <p>Sistema de Dimensionamento de Frota Geolocalizado</p>
-            
-            <a href="/processar" class="btn btn-process">⚙️ Rodar Pipeline</a>
-            <a href="/download-relatorio" class="btn btn-download">📂 Baixar Relatório</a>
+            <p>Algoritmo de Dimensionamento de Frota<br><b>Variáveis:</b> Pediatria, Multisserviços e Logística RJ</p>
+            <a href="/processar" class="btn btn-run">⚙️ Processar Demanda</a>
+            <a href="/download-relatorio" class="btn btn-down">📂 Baixar Relatório (CSV)</a>
         </div>
-        
-        <footer>
-            Repositório: <a href="https://github.com/Josehenriqueprogramador/beep-app.git" target="_blank">josehenriqueprogramador/beep-app.git</a>
-        </footer>
+        <div class="footer">
+            Desenvolvido por José Henrique Jardim | 
+            <a href="https://github.com/Josehenriqueprogramador/beep-app.git" target="_blank">GitHub Repo</a>
+        </div>
     </body>
     </html>
     """
 
 @app.get("/processar")
 def processar():
-    qtd = rodar_pipeline()
-    return f"Processamento concluído! {qtd} registros analisados. Volte e clique em baixar."
+    qtd = rodar_pipeline_complexo()
+    return {"status": "sucesso", "pedidos_processados": qtd, "mensagem": "Relatório gerado com sucesso!"}
 
 @app.get("/download-relatorio")
 def download():
     if os.path.exists("dimensionamento.csv"):
-        return FileResponse("dimensionamento.csv", media_type="text/csv", filename="relatorio_beep.csv")
-    raise HTTPException(status_code=404, detail="Arquivo não encontrado. Rode o pipeline primeiro.")
+        return FileResponse("dimensionamento.csv", media_type="text/csv", filename="dimensionamento_beep.csv")
+    raise HTTPException(status_code=404, detail="Execute o processamento primeiro.")
