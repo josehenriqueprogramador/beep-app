@@ -1,56 +1,131 @@
-# 🚀 Beep Saúde - Logística Inteligente & Gestão de Duplas
+# 🚀 Beep Saúde - Logística Inteligente
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-05998b.svg)
-![Status](https://img.shields.io/badge/Status-Produção_MVP-green.svg)
-
-Este projeto implementa um **Motor de Dimensionamento Logístico** de alta precisão para operações de saúde domiciliar. Diferente de modelos lineares, este algoritmo calcula a necessidade de frota baseada na **Matriz de Complexidade de Atendimento**.
-
-## 🧠 Inteligência do Negócio: Matriz de Complexidade
-O sistema abandona a métrica fixa de "atendimentos por hora" e adota uma visão baseada em carga de trabalho real (Workload Capacity):
-
-1.  **Variáveis de Perfil:** Identifica pacientes **Crianças**, adicionando um tempo de manejo de +10 min para garantir a qualidade e o cuidado no atendimento pediátrico.
-2.  **Multisserviços:** Calcula o tempo incremental para cada item adicional (Vacinas vs. Coletas), permitindo que um chamado com 5 itens seja dimensionado de forma diferente de um chamado simples.
-3.  **Jornada Real:** Calibrado para a realidade operacional da Beep, onde uma dupla (Técnica + Motorista) realiza entre **6 a 12 atendimentos em uma jornada de 6 horas**.
+Plataforma de inteligência logística voltada para dimensionamento de frotas e otimização de atendimento domiciliar, desenvolvida com Python + FastAPI + Docker.
 
 ---
 
-## 🛠️ Arquitetura Técnica
-* **Motor Geográfico:** Validação via `Shapely` para garantir cobertura na Região Metropolitana do Rio de Janeiro.
-* **Cálculo de Capacidade:** Algoritmo que converte minutos totais (Atendimento + Deslocamento) em **Duplas Necessárias** por faixa horária.
-* **Output Operacional:** Gera relatórios em CSV com métricas de produtividade prontas para tomada de decisão gerencial.
+## 📌 Visão Geral
+
+O sistema implementa um Motor de Dimensionamento de alta precisão para operações de saúde domiciliar, focado em:
+
+- Cálculo de Complexidade (Pediátrico/Adulto)
+- Dimensionamento de Duplas (Técnica + Motorista)
+- Otimização de Jornada de 6 Horas
+- Gestão de Multisserviços (Vacinas e Coletas)
 
 ---
 
-## 📊 Estrutura do Relatório (CSV)
-O sistema exporta os seguintes indicadores críticos:
-* **Total_Casas:** Volume de paradas necessárias.
-* **Pacientes_Crianca/Adulto:** Justificativa da complexidade da hora.
-* **Duplas_Necessarias:** Quantidade de equipes para cobrir a demanda sem atrasos.
-* **Atendimentos_em_6h:** Produtividade real estimada para a jornada da dupla.
-* **Tempo_Medio_por_Casa:** KPI que explica o "gargalo" operacional de cada faixa horária.
+## 🧠 Tecnologias
+
+- Python 3.10+
+- FastAPI
+- Docker
+- Pandas
+- Shapely (Geofencing)
 
 ---
 
-## 🏁 Como Operar
+## 📁 Estrutura
 
-### 1. Instalação e Execução
-```bash
+backend/
+├── app/
+│   ├── main.py
+│   ├── core/
+│   ├── schemas/
+│   └── utils/
+├── requirements.txt
+└── Dockerfile
+
+docker-compose.yml
+
+---
+
+## 🧱 Arquitetura
+
+Requisição (Dados)
+↓
+Validador Geográfico (RJ)
+↓
+Motor de Complexidade
+↓
+Cálculo de Duplas
+↓
+Relatório (CSV)
+
+---
+
+## 🚀 Rodar Localmente
+
 pip install -r requirements.txt
-uvicorn app:app --reload
 
+uvicorn app.main:app --reload
+
+Servidor:
+
+http://localhost:8000
 
 ---
 
+## 🐳 Rodar com Docker
+
+docker compose up -d --build
+
+---
+
+## 📡 Endpoints
+
+GET /health
+
+Resposta:
+
+{
+  "status": "ok"
+}
+
+POST /dimensionar
+
+Resposta:
+
+{
+  "message": "processamento concluído"
+}
+
+---
+
+## 🧪 Testes
+
+curl http://localhost:8000/health
+
+---
+
+## 🔐 Próximas Features
+
+- Integração Google Maps
+- Dashboard Real-time
+- Predição de Demanda
+- Roteirização Dinâmica
+
+---
+
+## 📈 Roadmap
+
+Fase 1
+- Algoritmo Base
+- Estrutura Docker
+
+Fase 2
+- API FastAPI
+
+Fase 3
+- Interface Web
+
+---
 
 ## 👨‍💻 Autor
 
-**José Henrique Jardim**  
-Desenvolvedor de Software | Data Science  
+José Henrique Jardim
 
-🔗 LinkedIn: https://linkedin.com/in/jose-jardim-764143247
-
-📺 YouTube: https://youtube.com/@caminho_do_codigo  
+https://github.com/josehenriqueprogramador
 
 ---
 
@@ -59,3 +134,7 @@ Desenvolvedor de Software | Data Science
 [![Assista no YouTube](https://img.youtube.com/vi/36UTnlklR-8/0.jpg)](https://youtu.be/36UTnlklR-8)
 
 ---
+
+## 📜 Licença
+
+MIT License
