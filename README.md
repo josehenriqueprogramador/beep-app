@@ -1,53 +1,60 @@
-# 🚀 Beep Saúde - Gestão de Duplas & Performance
+# 🚀 Beep Saúde - Inteligência Operacional
 
-Sistema especializado em dimensionamento de escala para operações de saúde domiciliar, focado em transformar volume de atendimentos em necessidade real de pessoal.
+API desenvolvida com **FastAPI** para dimensionamento automático de duplas (Técnica + Motorista) e gestão de escala na Região Metropolitana do Rio de Janeiro.
 
 ---
 
 ## 📌 Visão Geral
 
-O foco central deste projeto é a otimização da escala operacional. Ele processa a base de chamados e aplica regras de negócio para definir a eficiência das equipes:
+O projeto automatiza o planejamento de jornada da Beep Saúde, convertendo demanda em decisões de escala baseadas em regras reais:
 
-- **Dimensionamento de Duplas:** Cálculo exato de quantos técnicos e motoristas são necessários.
-- **Matriz de Complexidade:** Ajuste automático de tempo para casos pediátricos (+10 min).
-- **Cálculo de Jornada:** Planejamento baseado em turnos de 6 horas.
-- **Performance:** Estimativa de produtividade entre 6 a 12 atendimentos por equipe.
+- **Matriz de Tempo:** Cálculo por item (Vacina 5min / Coleta 8min) + 15min fixos de deslocamento.
+- **Complexidade Pediátrica:** Adicional de +10min para manejo infantil.
+- **Geofencing:** Filtro via `Shapely` para validar operações dentro do polígono do Rio de Janeiro.
+- **Capacidade:** Dimensionamento baseado em jornadas reais de 6 horas.
 
 ---
 
-## 🧠 Regras de Negócio
+## 🧠 Tecnologias
 
-- **Perfil Pediátrico:** Identificação de pacientes infantis para ajuste do tempo médio de atendimento.
-- **Gestão de Itens:** Diferenciação entre volume de vacinas e coletas por domicílio.
-- **Métrica de Escala:** Conversão de carga horária total em número de duplas operacionais.
+- Python 3.10+
+- FastAPI
+- Pandas & NumPy
+- Shapely
 
 ---
 
 ## 📁 Estrutura do App
 
 /
-├── main.py              # Script principal de processamento
-├── complexidade.py      # Lógica da Matriz de Complexidade
-├── escala.py            # Motor de cálculo de duplas
-├── data/                # Inputs e Outputs (CSV)
+├── main.py              # Script principal (API e Cálculo)
+├── dimensionamento.csv  # Relatório gerado (Output)
 └── requirements.txt     # Dependências
 
 ---
 
-## 📊 Indicadores Gerados
+## 🧱 Lógica de Processamento
 
-O sistema processa os dados e entrega um relatório detalhado com:
+Entrada (Simulação) → Filtro Geográfico → Matriz de Complexidade → Cálculo de Minutos → Escala de Duplas
 
-- **Total de Casas:** Volume bruto de paradas no dia.
-- **Duplas Necessárias:** Quantidade de equipes para cobrir a demanda sem atrasos.
-- **Tempo Médio/Casa:** KPI que identifica a complexidade da rota.
-- **Capacidade Operacional:** Projeção de atendimentos possíveis dentro da jornada.
+---
+
+## 📊 Indicadores Gerados (KPIs)
+
+- **Total de Casas:** Volume de paradas por hora.
+- **Duplas Necessárias:** Equipes necessárias para a demanda.
+- **Atendimentos em 6h:** Produtividade real por dupla.
+- **Tempo Médio/Casa:** Eficiência da rota.
 
 ---
 
 ## 🚀 Como Executar
 
-python main.py
+pip install -r requirements.txt
+
+uvicorn main:app --reload
+
+**Interface:** http://localhost:8000
 
 ---
 
@@ -55,7 +62,7 @@ python main.py
 
 José Henrique Jardim
 
-https://github.com/josehenriqueprogramador
+https://github.com/Josehenriqueprogramador/beep-app.git
 
 ---
 
