@@ -38,3 +38,22 @@ O sistema exporta os seguintes indicadores críticos:
 ```bash
 pip install -r requirements.txt
 uvicorn app:app --reload
+
+---
+
+## 👨‍💻 Autor
+
+**José Henrique Jardim**  
+Desenvolvedor de Software | Data Science  
+
+🔗 LinkedIn: https://linkedin.com/in/jose-jardim-764143247
+
+📺 YouTube: https://youtube.com/@caminho_do_codigo  
+
+---
+
+## 📺 Processo de Desenvolvimento
+
+[![Assista no YouTube](https://img.youtube.com/vi/36UTnlklR-8/0.jpg)](https://youtu.be/36UTnlklR-8)
+
+---
