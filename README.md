@@ -1,123 +1,53 @@
-# 🚀 Beep Saúde - Logística Inteligente
+# 🚀 Beep Saúde - Gestão de Duplas & Performance
 
-Plataforma de inteligência logística voltada para dimensionamento de frotas e otimização de atendimento domiciliar, desenvolvida com Python + FastAPI + Docker.
+Sistema especializado em dimensionamento de escala para operações de saúde domiciliar, focado em transformar volume de atendimentos em necessidade real de pessoal.
 
 ---
 
 ## 📌 Visão Geral
 
-O sistema implementa um Motor de Dimensionamento de alta precisão para operações de saúde domiciliar, focado em:
+O foco central deste projeto é a otimização da escala operacional. Ele processa a base de chamados e aplica regras de negócio para definir a eficiência das equipes:
 
-- Cálculo de Complexidade (Pediátrico/Adulto)
-- Dimensionamento de Duplas (Técnica + Motorista)
-- Otimização de Jornada de 6 Horas
-- Gestão de Multisserviços (Vacinas e Coletas)
-
----
-
-## 🧠 Tecnologias
-
-- Python 3.10+
-- FastAPI
-- Docker
-- Pandas
-- Shapely (Geofencing)
+- **Dimensionamento de Duplas:** Cálculo exato de quantos técnicos e motoristas são necessários.
+- **Matriz de Complexidade:** Ajuste automático de tempo para casos pediátricos (+10 min).
+- **Cálculo de Jornada:** Planejamento baseado em turnos de 6 horas.
+- **Performance:** Estimativa de produtividade entre 6 a 12 atendimentos por equipe.
 
 ---
 
-## 📁 Estrutura
+## 🧠 Regras de Negócio
 
-backend/
-├── app/
-│   ├── main.py
-│   ├── core/
-│   ├── schemas/
-│   └── utils/
-├── requirements.txt
-└── Dockerfile
-
-docker-compose.yml
+- **Perfil Pediátrico:** Identificação de pacientes infantis para ajuste do tempo médio de atendimento.
+- **Gestão de Itens:** Diferenciação entre volume de vacinas e coletas por domicílio.
+- **Métrica de Escala:** Conversão de carga horária total em número de duplas operacionais.
 
 ---
 
-## 🧱 Arquitetura
+## 📁 Estrutura do App
 
-Requisição (Dados)
-↓
-Validador Geográfico (RJ)
-↓
-Motor de Complexidade
-↓
-Cálculo de Duplas
-↓
-Relatório (CSV)
+/
+├── main.py              # Script principal de processamento
+├── complexidade.py      # Lógica da Matriz de Complexidade
+├── escala.py            # Motor de cálculo de duplas
+├── data/                # Inputs e Outputs (CSV)
+└── requirements.txt     # Dependências
 
 ---
 
-## 🚀 Rodar Localmente
+## 📊 Indicadores Gerados
 
-pip install -r requirements.txt
+O sistema processa os dados e entrega um relatório detalhado com:
 
-uvicorn app.main:app --reload
-
-Servidor:
-
-http://localhost:8000
-
----
-
-## 🐳 Rodar com Docker
-
-docker compose up -d --build
+- **Total de Casas:** Volume bruto de paradas no dia.
+- **Duplas Necessárias:** Quantidade de equipes para cobrir a demanda sem atrasos.
+- **Tempo Médio/Casa:** KPI que identifica a complexidade da rota.
+- **Capacidade Operacional:** Projeção de atendimentos possíveis dentro da jornada.
 
 ---
 
-## 📡 Endpoints
+## 🚀 Como Executar
 
-GET /health
-
-Resposta:
-
-{
-  "status": "ok"
-}
-
-POST /dimensionar
-
-Resposta:
-
-{
-  "message": "processamento concluído"
-}
-
----
-
-## 🧪 Testes
-
-curl http://localhost:8000/health
-
----
-
-## 🔐 Próximas Features
-
-- Integração Google Maps
-- Dashboard Real-time
-- Predição de Demanda
-- Roteirização Dinâmica
-
----
-
-## 📈 Roadmap
-
-Fase 1
-- Algoritmo Base
-- Estrutura Docker
-
-Fase 2
-- API FastAPI
-
-Fase 3
-- Interface Web
+python main.py
 
 ---
 
