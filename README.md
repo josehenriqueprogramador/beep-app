@@ -1,40 +1,77 @@
-# 🚀 Beep Saúde - Logística Inteligente & Gestão de Duplas
+# 🚀 Beep Saúde - Inteligência Operacional
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-05998b.svg)
-![Status](https://img.shields.io/badge/Status-Produção_MVP-green.svg)
-
-Este projeto implementa um **Motor de Dimensionamento Logístico** de alta precisão para operações de saúde domiciliar. Diferente de modelos lineares, este algoritmo calcula a necessidade de frota baseada na **Matriz de Complexidade de Atendimento**.
-
-## 🧠 Inteligência do Negócio: Matriz de Complexidade
-O sistema abandona a métrica fixa de "atendimentos por hora" e adota uma visão baseada em carga de trabalho real (Workload Capacity):
-
-1.  **Variáveis de Perfil:** Identifica pacientes **Crianças**, adicionando um tempo de manejo de +10 min para garantir a qualidade e o cuidado no atendimento pediátrico.
-2.  **Multisserviços:** Calcula o tempo incremental para cada item adicional (Vacinas vs. Coletas), permitindo que um chamado com 5 itens seja dimensionado de forma diferente de um chamado simples.
-3.  **Jornada Real:** Calibrado para a realidade operacional da Beep, onde uma dupla (Técnica + Motorista) realiza entre **6 a 12 atendimentos em uma jornada de 6 horas**.
+API desenvolvida com **FastAPI** para dimensionamento automático de duplas (Técnica + Motorista) e gestão de escala na Região Metropolitana do Rio de Janeiro.
 
 ---
 
-## 🛠️ Arquitetura Técnica
-* **Motor Geográfico:** Validação via `Shapely` para garantir cobertura na Região Metropolitana do Rio de Janeiro.
-* **Cálculo de Capacidade:** Algoritmo que converte minutos totais (Atendimento + Deslocamento) em **Duplas Necessárias** por faixa horária.
-* **Output Operacional:** Gera relatórios em CSV com métricas de produtividade prontas para tomada de decisão gerencial.
+## 📌 Visão Geral
+
+O projeto automatiza o planejamento de jornada da Beep Saúde, convertendo demanda em decisões de escala baseadas em regras reais:
+
+- **Matriz de Tempo:** Cálculo por item (Vacina 5min / Coleta 8min) + 15min fixos de deslocamento.
+- **Complexidade Pediátrica:** Adicional de +10min para manejo infantil.
+- **Geofencing:** Filtro via `Shapely` para validar operações dentro do polígono do Rio de Janeiro.
+- **Capacidade:** Dimensionamento baseado em jornadas reais de 6 horas.
 
 ---
 
-## 📊 Estrutura do Relatório (CSV)
-O sistema exporta os seguintes indicadores críticos:
-* **Total_Casas:** Volume de paradas necessárias.
-* **Pacientes_Crianca/Adulto:** Justificativa da complexidade da hora.
-* **Duplas_Necessarias:** Quantidade de equipes para cobrir a demanda sem atrasos.
-* **Atendimentos_em_6h:** Produtividade real estimada para a jornada da dupla.
-* **Tempo_Medio_por_Casa:** KPI que explica o "gargalo" operacional de cada faixa horária.
+## 🧠 Tecnologias
+
+- Python 3.10+
+- FastAPI
+- Pandas & NumPy
+- Shapely
 
 ---
 
-## 🏁 Como Operar
+## 📁 Estrutura do App
 
-### 1. Instalação e Execução
-```bash
+/
+├── main.py              # Script principal (API e Cálculo)
+├── dimensionamento.csv  # Relatório gerado (Output)
+└── requirements.txt     # Dependências
+
+---
+
+## 🧱 Lógica de Processamento
+
+Entrada (Simulação) → Filtro Geográfico → Matriz de Complexidade → Cálculo de Minutos → Escala de Duplas
+
+---
+
+## 📊 Indicadores Gerados (KPIs)
+
+- **Total de Casas:** Volume de paradas por hora.
+- **Duplas Necessárias:** Equipes necessárias para a demanda.
+- **Atendimentos em 6h:** Produtividade real por dupla.
+- **Tempo Médio/Casa:** Eficiência da rota.
+
+---
+
+## 🚀 Como Executar
+
 pip install -r requirements.txt
-uvicorn app:app --reload
+
+uvicorn main:app --reload
+
+**Interface:** http://localhost:8000
+
+---
+
+## 👨‍💻 Autor
+
+José Henrique Jardim
+
+https://github.com/Josehenriqueprogramador/beep-app.git
+
+---
+
+## 📺 Processo de Desenvolvimento
+
+[![Assista no YouTube](https://img.youtube.com/vi/36UTnlklR-8/0.jpg)](https://youtu.be/36UTnlklR-8)
+
+---
+
+## 📜 Licença
+
+MIT License
